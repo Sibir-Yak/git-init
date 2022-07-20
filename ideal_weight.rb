@@ -6,13 +6,13 @@ weight = gets.chomp
 
 sum = (weight.to_i-110) * 1.15
 
-if weight.to_i < 140
-    puts "бро формула конченая и считает очень условно введи рост от 140"
-    exit
-end
+# if weight.to_i < 140
+#     puts "бро формула конченая и считает очень условно введи рост от 140"
+#     exit
+# end
 
-if sum > 0
+if sum > 20
     puts "#{name}, витаю тебя дуже! Твой идеальный вес #{sum.to_i} килограмчиков."
-else sum < 0
+else sum <= 20
     puts "#{name}, бро шикарный вес у тебя, че пристал?"
 end
