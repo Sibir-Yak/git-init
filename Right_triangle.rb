@@ -28,6 +28,8 @@ if (catet1 + catet2) <= max_side
 end 
 if a == b && b == c && c == a
 	puts "Равносторонний треугольник"
+elsif catet1 == catet2 || catet1 == max_side || catet2 == max_side && max_side ** 2 == catet1 ** 2 + catet2 ** 2
+	puts "Прямоугольный треугольник, катеты которого равны"
 elsif catet1 == catet2 || catet1 == max_side || catet2 == max_side
 	puts "Равнобедренный треугольник"
 elsif max_side ** 2 == catet1 ** 2 + catet2 ** 2
