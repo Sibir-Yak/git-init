@@ -1,5 +1,9 @@
-num = (2..20).map { |n| n*5 }
+num = (10..100).select { |n| n % 5 == 0 }
 puts num.to_a
+
+
+# num = (2..20).map { |n| n*5 }
+# puts num.to_a
 
 
 # ну лучше все-таки тогда уже так:
