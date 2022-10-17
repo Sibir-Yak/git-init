@@ -12,8 +12,13 @@ class Route
   end
 
   def delete_station(stat)    #Может удалять промежуточную станцию из списка
-    
+    if stat == @station[0]
+      puts "Первую станцию не удаляем"
+    elsif stat == @station[-1]
+      puts "Последнюю тоже не удаляем"
+    else
     @station.tap { |hs| hs.delete(stat) }
+    end
   end 
 
   # def station
