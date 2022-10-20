@@ -11,6 +11,10 @@ if date > 31 || month > 12
     
 end
 
+
+
+
+
 if year % 4 == 0 && year % 100 != 0 
     shit = 0
     years.each do |mon, day|
