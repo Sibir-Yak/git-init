@@ -17,7 +17,7 @@ class Station
     puts "Грузовых #{ @trains.reject { |tr| tr.type == "pas" }.size }"     #Перебираем с антиусловием    
   end 
 
-  def train_type(viev)     #Возвращаем список поездов на станции по типу    
+  def train_type(type)     #Возвращаем список поездов на станции по типу    
     # pas = 0
     # gruz = 0
     # @trains.each do |tr|
@@ -29,11 +29,11 @@ class Station
     # end
     # puts "Грузовых поездо:#{gruz} Пасажирскмх поездов:#{pas}"
 
-    @trains.each do |tr|
-      if tr.type == viev
-      puts "По указанному вами типу #{viev}, есть такие поезда #{tr}"
-      puts "Его номер #{tr.number}"
-      puts "У  него #{tr.wagons} вагонов"
+    @trains.each do |train|
+      if train.type == type
+        puts "По указанному вами типу #{type}, есть такие поезда #{train}"
+        puts "Его номер #{train.number}"
+        puts "У  него #{train.wagons} вагонов"
       end
     end
   end

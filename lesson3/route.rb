@@ -1,23 +1,24 @@
 class Route
-  attr_reader :station        #Может выводить список всех станций по-порядку от начальной до конечной
+  attr_reader :stations        #Может выводить список всех станций по-порядку от начальной до конечной
   def initialize(station, station2)   #Имеет начальную и конечную станцию, а также список промежуточных станций. Начальная и конечная станции указываютсся при создании маршрута, а промежуточные могут добавляться между ними.
-    @station = []
-    @station << station
-    @station << station2
-
+    # @station = []
+    # @station << station
+    # @station << station2
+    @stations = [station, station2]
   end
 
-  def add_station(stat)       #Может добавлять промежуточную станцию в список
-    @station.insert(-2, stat)
+  def add_station(point)       #Может добавлять промежуточную станцию в список
+    @stations.insert(-2, point)
   end
 
-  def delete_station(stat)    #Может удалять промежуточную станцию из списка
-    if stat == @station[0]
+  def delete_station(point)    #Может удалять промежуточную станцию из списка
+    if point == @stations[0]
       puts "Первую станцию не удаляем"
-    elsif stat == @station[-1]
+    elsif point == @stations[-1]
       puts "Последнюю тоже не удаляем"
     else
-    @station.tap { |hs| hs.delete(stat) }
+    # @station.tap { |hs| hs.delete(point) }
+    @stations.delete(point)
     end
   end 
 

@@ -10,7 +10,7 @@ class Train
     # @train[number] = type
     @wagons = num_wagons
     @route = nil
-    @num_station = 0
+    @station_index = 0
   end
 
   def speed_up(speed)            #Может набирать скорость
@@ -27,8 +27,9 @@ class Train
       @speed -= speed
       puts "Скорость стала меньше на #{speed} км.ч."
     else
-      puts "Ваш параметр приводит к полной остановке"
-      @speed = 0
+      # puts "Ваш параметр приводит к полной остановке"
+      # @speed = 0
+      stop
     end
   end
 
@@ -58,31 +59,31 @@ class Train
     
   def add_route(route)   #Назначаем маршрут
     @route = route
-    puts "Вы сейчас на первой станции #{@route.station[0].names_station}"
-    @route.station[0].add_train(self)
+    puts "Вы сейчас на первой станции #{@route.stations[0].names}"
+    @route.stations[0].add_train(self)
   end
 
   def go_next_station              #Может перемещаться между станциями, указанными в маршруте. Перемещение возможно вперед, но только на 1 станцию за раз
-    if @num_station < @route.station.size-1
-    @num_station +=1
-    # stat = @num_station - 1
-    # puts "XXX #{@route.station[@num_station]}"
-    @route.station[@num_station].add_train(self)
-    @route.station[@num_station - 1].train_go(self)   #Кикаем паравоз
-    puts "Вы на станции #{@route.station[@num_station].names_station}"
+    if @station_index < @route.stations.size-1
+    @station_index +=1
+    # stat = @station_index - 1
+    # puts "XXX #{@route.station[@station_index]}"
+    @route.stations[@station_index - 1].train_go(self)   #Кикаем паравоз
+    @route.stations[@station_index].add_train(self)   
+    puts "Вы на станции #{@route.stations[@station_index].names}"
     else
       puts "Вы на последней станции"
     end
   end
 
   def go_previous_station          #Может перемещаться между станциями, указанными в маршруте. Перемещение возможно  назад, но только на 1 станцию за раз
-    if @num_station >= 1 
-    @num_station -=1
-    # stat = @num_station - 1
-    # puts "XXX #{@route.station[@num_station]}"
-    @route.station[@num_station].add_train(self)
-    @route.station[@num_station + 1].train_go(self)   #Кикаем паравоз
-    puts "Вы на станции #{@route.station[@num_station].names_station}"
+    if @station_index >= 1 
+    @station_index -=1
+    # stat = @station_index - 1
+    # puts "XXX #{@route.station[@station_index]}"
+    @route.stations[@station_index + 1].train_go(self)   #Кикаем паравоз
+    @route.stations[@station_index].add_train(self)
+    puts "Вы на станции #{@route.stations[@station_index].names}"
     else
       puts "Вы на первой станции"
     end
@@ -90,8 +91,8 @@ class Train
   end
 
   def next_station
-    if @num_station >= 0 && @num_station < @route.station.size-1
-      puts "Следущая станция #{@route.station[@num_station+1].names_station}"
+    if @station_index < @route.stations.size-1   #@station_index >= 0 &&
+      puts "Следущая станция #{@route.stations[@station_index+1].names}"
     else
       puts "Вы на последней, следующей станции нет"
     end
@@ -99,14 +100,15 @@ class Train
   end
 
   def current_station
-    if @num_station >= 0
-      puts "Текущая станция #{@route.station[@num_station].names_station}"
-    end    
+    # if @station_index >= 0
+    #   puts "Текущая станция #{@route.stations[@station_index].names}"
+    # end
+    puts "Текущая станция #{@route.stations[@station_index].names}"    
   end
 
   def previous_station
-    if @num_station >= 1
-      puts "Предыдущая станция #{@route.station[@num_station-1].names_station}"
+    if @station_index >= 1
+      puts "Предыдущая станция #{@route.stations[@station_index-1].names}"
     else
       puts "Вы на первойстанции, предыдущей нет"
     end
@@ -117,14 +119,14 @@ end
 
   # def next_prev_st       #Возвращать предыдущую станцию, текущую, следующую, на основе маршрута
 
-  #   if @num_station >= 1
-  #      puts "Предыдущая станция #{@route.station[@num_station-1].names_station}"
+  #   if @station_index >= 1
+  #      puts "Предыдущая станция #{@route.station[@station_index-1].names}"
   #   end
-  #   if @num_station >= 0
-  #      puts "Текущая станция #{@route.station[@num_station].names_station}"
+  #   if @station_index >= 0
+  #      puts "Текущая станция #{@route.station[@station_index].names}"
   #   end
-  #   if @num_station >= 0 && @num_station < @route.station.size-1
-  #       puts "Следущая станция #{@route.station[@num_station+1].names_station}"
+  #   if @station_index >= 0 && @station_index < @route.station.size-1
+  #       puts "Следущая станция #{@route.station[@station_index+1].names}"
   #   end
   # end
 

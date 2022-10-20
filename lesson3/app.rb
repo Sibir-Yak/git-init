@@ -14,13 +14,13 @@ station5 = Station.new("Kiyv")
 
 route = Route.new(station1, station2)
 route2 = Route.new(station3, station4)
-# route.add_station(station3)
-# route.add_station(station5)
-# station1.add_train(train1)
-# train1.add_route(route)
-# train1.next_st
-# train1.next_prev_st
-# train1.previous_st
+route.add_station(station3)
+route.add_station(station5)
+station1.add_train(train1)
+train1.add_route(route)
+train1.go_next_station
+
+train1.go_previous_station
 
 
 # station1.add_train(train2)
