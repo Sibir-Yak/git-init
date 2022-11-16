@@ -1,0 +1,5 @@
+class TrainCargo < Train
+
+
+  
+end

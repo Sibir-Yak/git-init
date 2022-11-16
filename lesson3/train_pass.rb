@@ -1,0 +1,3 @@
+class TrainPass < Train
+  
+end
