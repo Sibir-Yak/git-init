@@ -14,7 +14,7 @@ puts "вас ожитают сокрушительные злоключения"
 
 
 rr = RailRoad.new
-@train2 = Train.new(124, "pass")
+# @train2 = Train.new(124, "pass")
 # puts train2.speed
 # train2
 # rr = RailRoad.new

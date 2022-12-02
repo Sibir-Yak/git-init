@@ -21,9 +21,6 @@ class Station
     end
   end
 
-  protected
-  # Методы далее не будут вызываться из клиентсокго кода, только через интерфейс.
-
   def add_train(train)      #Добавляем поезда
     @trains << train
   end
