@@ -1,7 +1,10 @@
 class Route
+  include InstanceCounter
+  
   attr_reader :stations        #Может выводить список всех станций по-порядку от начальной до конечной
   def initialize(station, station2)   #Имеет начальную и конечную станцию, а также список промежуточных станций. Начальная и конечная станции указываютсся при создании маршрута, а промежуточные могут добавляться между ними.
     @stations = [station, station2]
+    add_instance
   end
 
   def add_station(point)       #Может добавлять промежуточную станцию в список

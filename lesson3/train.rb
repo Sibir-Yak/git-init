@@ -1,18 +1,30 @@
 class Train
+include BrandName
+include InstanceCounter
+# include InstanceCounter
   attr_reader :number, :speed, :wagons, :route  #Может возвращать текущую скорость #Может возвращать количество вагонов
-                                                       
+                                                     
 #При добавлении вагона к поезду, объект вагона должен передаваться как аргумент метода 
 #и сохраняться во внутреннем массиве поезда, в отличие от предыдущего задания, 
 #где мы считали только кол-во вагонов.
 # Параметр конструктора "кол-во вагонов" при этом можно удалить.
-  def initialize(number)       #Имеет номер (произвольная строка) и тип (грузовой, пассажирский) 
+@@number_train = []
+
+def initialize(number)       #Имеет номер (произвольная строка) 
     @speed = 0
-    @number = number      
+    @number = number   
+    @@number_train << self
     # @type = type
     @wagons = []
     @route = nil
     @station_index = 0
+    add_instance
   end
+
+  def self.find(number_train)
+    @@number_train.find{|a| a.number == number_train}
+  end
+
 
   def speed_up(speed)            #Может набирать скорость
     if  speed > 0 

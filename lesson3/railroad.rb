@@ -92,18 +92,17 @@ class RailRoad
   def menu_demonstration
     puts "1) Вывести список станций"
     puts "2) Вывести список поезов на станции"
-    num4 = gets.chomp.to_i
-    if num4 == 1 
+    user_choice = gets.chomp.to_i
+    case user_choice
+    when 1 
       @stations.each do |station| 
-        puts station.names
+      puts station.names
       end
-    elsif num4 == 2
-      @stations.each do |station| 
-        station_for_train = station.names       
+    when 2 
+      @stations.each do |station|
         station.trains.each do |train|
-          train_for_station = train.number
-          puts "На станции #{station_for_train} находится поезд номер #{train_for_station}" 
-        end     
+          puts "На станции #{station.names} находится поезд номер #{train.number}"
+        end 
       end
     end
   end
@@ -265,8 +264,8 @@ class RailRoad
       if @routes[add_station_route].stations.include?(@stations[intermediate_station])
         puts "Станция уже в маршруте" 
       else
-        puts "Добавили" 
         @routes[add_station_route].add_station(@stations[intermediate_station])
+        puts "Добавили" 
       end 
     end
   end
@@ -298,11 +297,15 @@ class RailRoad
   end
 
   def station_visualize
-    number = 1
-    @stations.each do |station| 
-      puts "#{number}) -> #{station.names} <-" 
-      number += 1
+    # number = 1
+    # @stations.each do |station| 
+    #   puts "#{number}) -> #{station.names} <-" 
+    #   number += 1
+    # end
+    @stations.each.with_index(1) do |station, index|
+      puts "#{index}) -> #{station.names} <-"
     end
+
   end
 
 end

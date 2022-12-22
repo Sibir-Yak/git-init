@@ -1,4 +1,5 @@
 class TrainPass < Train
+  
   def docking(wagon_pass)         #стыковка  вагона
     if @speed == 0 
       if wagon_pass.is_a?(WagonPass)
