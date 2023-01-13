@@ -10,7 +10,7 @@ require_relative './wagon_cargo.rb'
 require_relative './wagon_pass.rb'
 require_relative './railroad.rb'
 
-    
+
 
 puts "Бобро пожаловать на Железную Дорогу"
 puts "вас ожитают сокрушительные злоключения"
