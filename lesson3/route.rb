@@ -14,7 +14,7 @@ class Route
   def add_name_route
     name_route = ""
     @stations.each do |name|
-      name_route += "->" + name.names
+      name_route += "->" + name.name
     end
     puts name_route
   end

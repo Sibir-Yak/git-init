@@ -136,7 +136,13 @@ class RailRoad
 
     puts "Введите номер последней станции"
     station2 = gets.chomp.to_i
-    @routes << Route.new(@stations[station1-1], @stations[station2-1])
+    if station1 == station2
+      puts "Введены одинаковые станции"
+    else
+      @routes << Route.new(@stations[station1-1], @stations[station2-1])
+      puts "Маршрут добавлен:"
+      @routes[-1].add_name_route
+    end
   end
 
 # 3.1)Назаначить маршрут поезду
