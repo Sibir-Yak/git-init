@@ -43,13 +43,19 @@ class Train
     puts "Поезд остановлен"
   end
 
+  def docking(wagon)         #стыковка  вагона
+    @wagons << wagon
+    puts "Вагончик добавлен"
+    puts "Теперь их #{@wagons.size}"
+  end
+
   def current_station
-    puts "Текущая станция #{@route.stations[@station_index].names}"
+    puts "Текущая станция #{@route.stations[@station_index].name}"
   end
 
   def next_station
     if @station_index < @route.stations.size - 1
-      puts "Следущая станция #{@route.stations[@station_index+1].names}"
+      puts "Следущая станция #{@route.stations[@station_index+1].name}"
     else
       puts "Вы на последней, следующей станции нет"
     end
@@ -57,7 +63,7 @@ class Train
 
   def previous_station
     if @station_index >= 1
-      puts "Предыдущая станция #{@route.stations[@station_index-1].names}"
+      puts "Предыдущая станция #{@route.stations[@station_index-1].name}"
     else
       puts "Вы на первойстанции, предыдущей нет"
     end
@@ -77,7 +83,7 @@ class Train
 
   def add_route(route)   #Назначаем маршрут
     @route = route
-    puts "Вы сейчас на первой станции #{@route.stations[0].names}"
+    puts "Вы сейчас на первой станции #{@route.stations[0].name}"
     @route.stations[0].add_train(self)
   end
 
@@ -86,7 +92,7 @@ class Train
     @station_index += 1
     @route.stations[@station_index - 1].train_go(self)   #Кикаем паравоз
     @route.stations[@station_index].add_train(self)
-    puts "Вы на станции #{@route.stations[@station_index].names}"
+    puts "Вы на станции #{@route.stations[@station_index].name}"
     else
       puts "Вы на последней станции"
     end
@@ -97,7 +103,7 @@ class Train
     @station_index -= 1
     @route.stations[@station_index + 1].train_go(self)   #Кикаем паравоз
     @route.stations[@station_index].add_train(self)
-    puts "Вы на станции #{@route.stations[@station_index].names}"
+    puts "Вы на станции #{@route.stations[@station_index].name}"
     else
       puts "Вы на первой станции"
     end

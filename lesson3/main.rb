@@ -1,5 +1,5 @@
-require_relative './counter.rb'
-require_relative './brand.rb'
+require_relative './instance_counter.rb'
+require_relative './brand_name.rb'
 require_relative './train.rb'
 require_relative './station.rb'
 require_relative './route.rb'

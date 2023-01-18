@@ -95,12 +95,12 @@ class RailRoad
     case user_choice
     when 1
       @stations.each do |station|
-      puts station.names
+      puts station.name
       end
     when 2
       @stations.each do |station|
         station.trains.each do |train|
-          puts "На станции #{station.names} находится поезд номер #{train.number}"
+          puts "На станции #{station.name} находится поезд номер #{train.number}"
         end
       end
     end
@@ -176,7 +176,7 @@ class RailRoad
     puts "Введите номер"
     number = 1
     @routes[route_for_delete_station].stations.each do |station|
-      puts "#{number}) #{station.names}"
+      puts "#{number}) #{station.name}"
       number += 1
     end
     number_station_for_delete = gets.chomp.to_i-1
@@ -288,7 +288,7 @@ class RailRoad
     @routes.each do |rout|
       name_route = ""
       rout.stations.each do |station|
-        name_route += "->" + station.names
+        name_route += "->" + station.name
       end
       puts "#{number})  #{name_route}"
       number += 1
@@ -302,7 +302,7 @@ class RailRoad
     #   number += 1
     # end
     @stations.each.with_index(1) do |station, index|
-      puts "#{index}) -> #{station.names} <-"
+      puts "#{index}) -> #{station.name} <-"
     end
 
   end

@@ -1,19 +1,19 @@
 class Station
   include InstanceCounter
-  attr_reader :names, :trains      #Может возвращать список всех поездов на станции, находящиеся в текущий момент
+  attr_reader :name, :trains      #Может возвращать список всех поездов на станции, находящиеся в текущий момент
 
   # Создаем переменную масив станцій
-  @@names_station = []
+  @@object_station = []
 
-  def initialize(names)   #Имеет название, которое указывается при ее создании
-    @names = names
+  def initialize(name)   #Имеет название, которое указывается при ее создании
+    @name = name
     @trains = []
-    @@names_station << self
+    @@object_station << self
     register_instance
   end
   # Метот вывода всех станций в класса
   def self.all
-    @@names_station
+    @@object_station
   end
 
   def train_type2    #Возвращаем список поездов на станции по типу
