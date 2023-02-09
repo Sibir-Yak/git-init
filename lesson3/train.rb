@@ -2,18 +2,26 @@ class Train
   include BrandName
   include InstanceCounter
 
-  attr_reader :number, :speed, :wagons, :route  #Может возвращать текущую скорость #Может возвращать количество вагонов
-
+  attr_reader :number, :speed, :wagons, :route, :now_station
+  NUMBER_TRAIN = /^[a-z0-9]{3}-[a-z0-9]{2}$/i
   @@all_trains = []
 
   def initialize(number)       #Имеет номер (произвольная строка)
     @speed = 0
     @number = number
+    validate!
     @wagons = []
+    @now_station = nil
     @route = nil
     @station_index = 0
     @@all_trains << self
     register_instance
+  end
+
+  def validate!
+    raise TrainNumberNilError if @number.nil?
+    raise TrainNumberFormatError if @number !~ NUMBER_TRAIN
+    raise TrainNumberNotUniqError if @@all_trains.find { |a| a.number == @number }
   end
 
   def self.find(number_train)
@@ -21,18 +29,14 @@ class Train
   end
 
   def speed_up(speed)            #Может набирать скорость
-    if  speed > 0
+    if  speed > 0 && speed < 200
       @speed += speed
-      puts "Скорость стала больше на #{speed} км.ч."
-    else
-      puts "Выберете скорость от 1 до жуя"
     end
   end
 
   def speed_down(speed)
     if speed >= 0  && speed < @speed
       @speed -= speed
-      puts "Скорость стала меньше на #{speed} км.ч."
     else
       stop
     end
@@ -40,73 +44,71 @@ class Train
 
   def stop           #Может тормозить (сбрасывать скорость до нуля)
     @speed = 0
-    puts "Поезд остановлен"
   end
 
   def docking(wagon)         #стыковка  вагона
     @wagons << wagon
-    puts "Вагончик добавлен"
-    puts "Теперь их #{@wagons.size}"
   end
 
   def current_station
-    puts "Текущая станция #{@route.stations[@station_index].name}"
+    @route.stations[@station_index].name
   end
 
   def next_station
     if @station_index < @route.stations.size - 1
-      puts "Следущая станция #{@route.stations[@station_index+1].name}"
-    else
-      puts "Вы на последней, следующей станции нет"
+      @route.stations[@station_index+1].name
     end
   end
 
   def previous_station
     if @station_index >= 1
-      puts "Предыдущая станция #{@route.stations[@station_index-1].name}"
-    else
-      puts "Вы на первойстанции, предыдущей нет"
+      @route.stations[@station_index-1].name
     end
   end
 
   def undocking       #расстыковка вагона
     if @speed == 0 && @wagons.any?
       @wagons.delete_at(0)
-      puts "Вагончик отбавлен"
-      puts "вагонов осталось #{@wagons.size}"
-    elsif @speed > 0
-      puts "Поезд в движении, расстыковка неможлива"
-    else
-      puts "Вагоны усё"
     end
   end
 
-  def add_route(route)   #Назначаем маршрут
+  def add_route(route)   #Правильно
     @route = route
-    puts "Вы сейчас на первой станции #{@route.stations[0].name}"
-    @route.stations[0].add_train(self)
+    start_station = @route.stations[0]
+    start_station.add_train(self)
+
+    start_station
   end
+
+  # def add_route(route)   #Не правильно
+  #   @route = route
+  #   puts @route.stations[0].name
+  #   @route.stations[0].add_train(self)
+  # end
 
   def go_next_station              #Может перемещаться между станциями, указанными в маршруте. Перемещение возможно вперед, но только на 1 станцию за раз
     if @station_index < @route.stations.size - 1
-    @station_index += 1
-    @route.stations[@station_index - 1].train_go(self)   #Кикаем паравоз
-    @route.stations[@station_index].add_train(self)
-    puts "Вы на станции #{@route.stations[@station_index].name}"
+      @station_index += 1
+      @route.stations[@station_index - 1].train_go(self)   #Кикаем паравоз
+      @route.stations[@station_index].add_train(self)
+      @now_station = @route.stations[@station_index].name
     else
-      puts "Вы на последней станции"
+      error = 0
     end
+    raise LastStationError if error == 0
   end
 
   def go_previous_station          #Может перемещаться между станциями, указанными в маршруте. Перемещение возможно  назад, но только на 1 станцию за раз
+    # Создать исключение на базе проверки на нулевую ( несуществующую станцию)
     if @station_index >= 1
     @station_index -= 1
     @route.stations[@station_index + 1].train_go(self)   #Кикаем паравоз
     @route.stations[@station_index].add_train(self)
-    puts "Вы на станции #{@route.stations[@station_index].name}"
+    @now_station = @route.stations[@station_index].name
     else
-      puts "Вы на первой станции"
+      error = 1
     end
+    raise FirstStationError if error == 1
   end
 end
 

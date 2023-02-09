@@ -33,9 +33,9 @@ class RailRoad
   end
 
   def seed
-    @trains << TrainPass.new(123)
-    @trains << TrainPass.new(124)
-    @trains << TrainCargo.new(234)
+    @trains << TrainPass.new("pas-01")
+    @trains << TrainPass.new("pas-02")
+    @trains << TrainCargo.new("gru-01")
 
     @stations << Station.new("Odessa")
     @stations << Station.new("Kharkiv")
@@ -45,6 +45,8 @@ class RailRoad
     @routes << Route.new(@stations[0], @stations[1])
     @routes << Route.new(@stations[1], @stations[4])
     @routes[0].add_station(@stations[3])
+    @trains[0].docking(WagonPass.new)
+    @trains[0].docking(WagonPass.new)
   end
 
   private
@@ -71,6 +73,9 @@ class RailRoad
     puts "4) Добавить вагоны к поезду"
     puts "5) Отцепить вагоны от поезда"
     puts "6) Добавить станцию в маршрут"
+    puts "7) Увееличить скорость паравозу"
+    puts "8) Уменьшить скорость паравозу"
+    puts "9) Остановить паровоз"
     user_choice = gets.chomp.to_i
     case user_choice
     when 1
@@ -85,24 +90,46 @@ class RailRoad
       unhook_wagon_train
     when 6
       add_station_to_route
+    when 7
+      speed_train_up
+    when 8
+      speed_train_down
+    when 9
+      train_stoped
     end
   end
 
   def menu_demonstration
     puts "1) Вывести список станций"
     puts "2) Вывести список поезов на станции"
-    user_choice = gets.chomp.to_i
-    case user_choice
+    puts "3) Узнать какой поезд двигаеться"
+    puts "4) Информация о паравозах"
+    case gets.chomp.to_i    # Можно обойтись без одноразовой переменной.
     when 1
       @stations.each do |station|
-      puts station.name
+        puts station.name
       end
     when 2
       @stations.each do |station|
+        if station.trains.empty?
+          puts "А на станции #{station.name} нема паравозиков"
+        end
         station.trains.each do |train|
           puts "На станции #{station.name} находится поезд номер #{train.number}"
         end
       end
+      puts
+    when 3
+      @trains.each do |train|
+        if train.speed != 0
+          puts "Чмеха под номером #{train.number} ураганит на скорости #{train.speed} км.ч. в пространство"
+        else
+          puts "Все чмехи стоят"
+        end
+      end
+    when 4
+      train_visualize
+      puts
     end
   end
 
@@ -112,14 +139,16 @@ class RailRoad
     number_train = gets.chomp.to_i
     case number_train
     when 1
-      puts "Введите номер поезда"
-      pass_trein_number = gets.chomp.to_i
+      puts "Введите номер поезда в формате (ХХХ-ХХ)"
+      pass_trein_number = gets.chomp
       @trains << TrainPass.new(pass_trein_number)
     when 2
-      puts "Введите номер поезда"
-      cargo_trein_number = gets.chomp.to_i
+      puts "Введите номер поезда в формате (ХХХ-ХХ)"
+      cargo_trein_number = gets.chomp
       @trains << TrainCargo.new(cargo_trein_number)
     end
+  rescue StandardError => e
+    puts e.message
   end
 
   def station_create
@@ -186,7 +215,13 @@ class RailRoad
       number += 1
     end
     number_station_for_delete = gets.chomp.to_i-1
-    @routes[route_for_delete_station].delete_station(@routes[route_for_delete_station].stations[number_station_for_delete])
+    if @routes[route_for_delete_station].stations[number_station_for_delete].trains.empty?
+      @routes[route_for_delete_station].delete_station(@routes[route_for_delete_station].stations[number_station_for_delete])
+    else
+      puts "На станции поезд удалять ее нельзя"
+    end
+    rescue StandardError => e
+      puts e.message
   end
 
 # 3.3) Переместить поезд по маршруту
@@ -203,6 +238,7 @@ class RailRoad
     end
     if train_busy.empty?
       puts "Поездов с маршрутом нет"
+      return
     end
     train_to_go = gets.chomp.to_i - 1
     if train_to_go < 0
@@ -213,16 +249,22 @@ class RailRoad
     puts "Перемещаем вперед или назад? "
     puts "1) Вперед"
     puts "2) Назад"
-    direction = gets.chomp.to_i
-    case direction
+    # direction = gets.chomp.to_i
+    case gets.chomp.to_i
     when 1
       train_busy[train_to_go].go_next_station
+      puts "Вы на станции:"
+      puts train_busy[train_to_go].now_station
     when 2
       train_busy[train_to_go].go_previous_station
+      puts "Вы на станции:"
+      puts train_busy[train_to_go].now_station
     else
       puts "Опять за старое?"
       puts "Гоу в первое меню"
     end
+  rescue StandardError => e
+    puts e.message
   end
 
 # 3.4) Добавить вагоны к поезду
@@ -230,16 +272,17 @@ class RailRoad
     puts "Выберете поезд к какому добавляем вагон"
     train_visualize
     train_add_wagon = gets.chomp.to_i - 1
-    puts "Какой вагон добавляем ?"
-    puts "1) Пасажирский"
-    puts "2) Грузовой"
-    wagon_for_train = gets.chomp.to_i
-    case wagon_for_train
-    when 1
-      @trains[train_add_wagon].docking(WagonPass.new)
-    when 2
-      @trains[train_add_wagon].docking(WagonCargo.new)
+    if @trains[train_add_wagon].speed == 0
+      if @trains[train_add_wagon].is_a?(TrainPass)
+        @trains[train_add_wagon].docking(WagonPass.new)
+      else
+        @trains[train_add_wagon].docking(WagonCargo.new)
+      end
+    else
+      puts "Паравозик в движении стыковка неможлива"
     end
+    puts "Вагончик добавлен"
+    puts "Теперь их #{@trains[train_add_wagon].wagons.size}"
   end
 
 # 3.5) Отцепить вагоны от поезда
@@ -247,7 +290,15 @@ class RailRoad
     puts "Выберете поезд у которого отцепляем вагон"
     train_visualize
     train_delete_wagon = gets.chomp.to_i-1
-    @trains[train_delete_wagon].undocking
+    if @trains[train_delete_wagon].speed == 0 && @trains[train_delete_wagon].wagons.any?
+      @trains[train_delete_wagon].undocking
+      puts "Вагончик отбавлен"
+      puts "вагонов осталось #{@trains[train_delete_wagon].wagons.size}"
+    elsif @trains[train_delete_wagon].speed > 0
+      puts "Поезд в движении, расстыковка неможлива"
+    else
+      puts "Вагоны усё"
+    end
   end
 # 3.6 Добавить станцию из маршрута
   def add_station_to_route
@@ -275,14 +326,62 @@ class RailRoad
     end
   end
 
+# 3.7 Увеличиваем скорость паровозу
+  def speed_train_up
+    puts "Какую чмеху разгоняем?"
+    train_visualize
+    train_speed_up = gets.chomp.to_i-1
+    puts "На какую скорость? (в разумных пределах)"
+    speed_for_train = gets.chomp.to_i
+    if speed_for_train >= 200
+      puts "Это за гранью разума"
+    elsif speed_for_train < 0
+      puts "Не гневи Бога поезда задом так не ураганят"
+    elsif speed_for_train == 0
+      puts "ноль не катит, тормозим другим способом"
+    else
+      @trains[train_speed_up].speed_up(speed_for_train)
+      puts "Запускаем чмеху #{@trains[train_speed_up].number} на орбиту со скоростью #{@trains[train_speed_up].speed} км.ч."
+    end
+  end
+
+# 3.8 Уменьшаем скорость паровозу
+  def speed_train_down
+    puts "Какую чмеху тормозим?"
+    train_visualize
+    train_speed_down = gets.chomp.to_i-1
+    if @trains[train_speed_down].speed == 0
+      puts "Бро и так стоит же"
+      return
+    end
+    puts "На какую скорость тормозим?"
+    puts "(если меньше текущей то приведет к остановке)"
+    speed_for_train = gets.chomp.to_i
+    @trains[train_speed_down].speed_down(speed_for_train)
+    puts "Скорость чмехи #{@trains[train_speed_down].number} упала дo #{@trains[train_speed_down].speed} км.ч."
+  end
+
+# 3.9 Останавливаем чухню
+  def train_stoped
+    puts "Какую чухню стопаем?"
+    train_visualize
+    train_speed_stop = gets.chomp.to_i-1
+    if @trains[train_speed_stop].speed == 0
+      puts "Бро и так стоит же"
+      return
+    end
+    @trains[train_speed_stop].stop
+    puts "Чухня #{@trains[train_speed_stop].number} стопнута"
+  end
+
   def train_visualize
     number = 1
     @trains.each do |train|
       if train.is_a?(TrainPass)
-      puts "#{number}) Чмеха пасажирська -> #{train.number} <- вагонов: #{train.wagons.size}"
+      puts "#{number}) Чмеха пасажирська -> #{train.number} <- вагонов: #{train.wagons.size} скорость: #{train.speed} "
       number += 1
       elsif train.is_a?(TrainCargo)
-        puts "#{number}) Чмеха грузова -> #{train.number} <-<- вагонов: #{train.wagons.size}"
+        puts "#{number}) Чмеха грузова -> #{train.number} <-<- вагонов: #{train.wagons.size} скорость: #{train.speed}"
       number += 1
       end
     end

@@ -1,3 +1,5 @@
+Dir['exceptions/*.rb'].sort.each { |file| require_relative file }
+
 require_relative './instance_counter.rb'
 require_relative './brand_name.rb'
 require_relative './train.rb'

@@ -5,6 +5,11 @@ class Route
   def initialize(station, station2)   #Имеет начальную и конечную станцию, а также список промежуточных станций. Начальная и конечная станции указываютсся при создании маршрута, а промежуточные могут добавляться между ними.
     @stations = [station, station2]
     register_instance
+    validate!
+  end
+
+  def validate!
+    raise "YO BRO!!! less than 2 stations on the route" if @stations.size < 2
   end
 
   def add_station(point)       #Может добавлять промежуточную станцию в список
@@ -12,20 +17,18 @@ class Route
   end
 
   def add_name_route
-    name_route = ""
-    @stations.each do |name|
-      name_route += "->" + name.name
-    end
-    puts name_route
+    stations.map(&:name).join('->')
+    # name_route = ""
+    # @stations.each do |name|
+    #   name_route += "->" + name.name
+    # end
+    # puts name_route
   end
 
   def delete_station(point)    #Может удалять промежуточную станцию из списка
-    if point == @stations[0]
-      puts "Первую станцию не удаляем"
-    elsif point == @stations[-1]
-      puts "Последнюю тоже не удаляем"
-    else
+    raise FirstStationDestroyError if point == stations[0]
+    raise LastStationDestroyError if point == stations[-1]
+
     @stations.delete(point)
-    end
   end
 end
