@@ -6,10 +6,9 @@ class RailRoad
     @stations = []
     @trains = []
     @routes = []
-    
   end
 
-  def menu 
+  def menu
     loop do
       puts "1) Если вы хотите создать станцию, поезд, вагон или маршрут"
       puts "2) Если вы хотите произвести операцию с созданными объектами"
@@ -28,13 +27,13 @@ class RailRoad
       else
         puts "Не вводите жуйню пожалуйста"
       end
-    break if user_choice == 0  
+    break if user_choice == 0
     end
     puts "Витя покинул чат"
   end
 
   def seed
-    @trains << TrainPass.new(123)      
+    @trains << TrainPass.new(123)
     @trains << TrainPass.new(124)
     @trains << TrainCargo.new(234)
 
@@ -75,7 +74,7 @@ class RailRoad
     user_choice = gets.chomp.to_i
     case user_choice
     when 1
-    assign_train_route
+      assign_train_route
     when 2
       delete_station_to_route
     when 3
@@ -84,7 +83,7 @@ class RailRoad
       add_wagon_to_train
     when 5
       unhook_wagon_train
-    when 6 
+    when 6
       add_station_to_route
     end
   end
@@ -92,18 +91,17 @@ class RailRoad
   def menu_demonstration
     puts "1) Вывести список станций"
     puts "2) Вывести список поезов на станции"
-    num4 = gets.chomp.to_i
-    if num4 == 1 
-      @stations.each do |station| 
-        puts station.names
+    user_choice = gets.chomp.to_i
+    case user_choice
+    when 1
+      @stations.each do |station|
+      puts station.name
       end
-    elsif num4 == 2
-      @stations.each do |station| 
-        station_for_train = station.names       
+    when 2
+      @stations.each do |station|
         station.trains.each do |train|
-          train_for_station = train.number
-          puts "На станции #{station_for_train} находится поезд номер #{train_for_station}" 
-        end     
+          puts "На станции #{station.name} находится поезд номер #{train.number}"
+        end
       end
     end
   end
@@ -130,7 +128,7 @@ class RailRoad
     @stations << Station.new(name_station)
   end
 
-  def route_create   
+  def route_create
     puts "Вот список доступніх станций"
     station_visualize
     puts "Введите номер начальной станции"
@@ -138,13 +136,19 @@ class RailRoad
 
     puts "Введите номер последней станции"
     station2 = gets.chomp.to_i
-    @routes << Route.new(@stations[station1-1], @stations[station2-1])
+    if station1 == station2
+      puts "Введены одинаковые станции"
+    else
+      @routes << Route.new(@stations[station1-1], @stations[station2-1])
+      puts "Маршрут добавлен:"
+      @routes[-1].add_name_route
+    end
   end
 
 # 3.1)Назаначить маршрут поезду
-  def assign_train_route 
+  def assign_train_route
     puts "Выберите поезд из списка"
-      trains_free = @trains.select {|train| train.route == nil}
+      trains_free = @trains.select { |train| train.route == nil}
       number = 1
       if trains_free.empty?
         puts "Свободных поездов больше нет"
@@ -163,7 +167,7 @@ class RailRoad
         return
       end
       trains_free[train_for].add_route(@routes[rout_for])
-      puts "Поезду #{trains_free[train_for].number} назнаен маршрут:"  
+      puts "Поезду #{trains_free[train_for].number} назнаен маршрут:"
       @routes[rout_for].add_name_route
   end
 
@@ -178,19 +182,19 @@ class RailRoad
     puts "Введите номер"
     number = 1
     @routes[route_for_delete_station].stations.each do |station|
-      puts "#{number}) #{station.names}"
-      number += 1 
+      puts "#{number}) #{station.name}"
+      number += 1
     end
     number_station_for_delete = gets.chomp.to_i-1
     @routes[route_for_delete_station].delete_station(@routes[route_for_delete_station].stations[number_station_for_delete])
   end
 
-# 3.3) Переместить поезд по маршруту 
+# 3.3) Переместить поезд по маршруту
   def move_train_along_route
     puts "Выберете поезд из списка"
     train_busy = []
     number = 1
-    @trains.each do |train|        
+    @trains.each do |train|
       if train.route != nil
         puts "#{number}) Поезд с маршрутом #{train.number}"
         train_busy << train
@@ -200,8 +204,8 @@ class RailRoad
     if train_busy.empty?
       puts "Поездов с маршрутом нет"
     end
-    train_to_go = gets.chomp.to_i-1
-    if train_to_go < 0 
+    train_to_go = gets.chomp.to_i - 1
+    if train_to_go < 0
       puts "Вы кажись что-то юлите"
       puts "Марш в первое меню"
       return
@@ -220,12 +224,12 @@ class RailRoad
       puts "Гоу в первое меню"
     end
   end
-  
+
 # 3.4) Добавить вагоны к поезду
   def add_wagon_to_train
     puts "Выберете поезд к какому добавляем вагон"
     train_visualize
-    train_add_wagon = gets.chomp.to_i-1
+    train_add_wagon = gets.chomp.to_i - 1
     puts "Какой вагон добавляем ?"
     puts "1) Пасажирский"
     puts "2) Грузовой"
@@ -252,7 +256,7 @@ class RailRoad
     rout_visualize
     # @routes.each(&:add_name_route)
     # @routes.each do |route|
-    #   route.add_name_route 
+    #   route.add_name_route
     # end
     add_station_route = gets.chomp.to_i-1
     if add_station_route + 1 > @routes.size
@@ -263,22 +267,22 @@ class RailRoad
       station_visualize
       intermediate_station = gets.chomp.to_i-1
       if @routes[add_station_route].stations.include?(@stations[intermediate_station])
-        puts "Станция уже в маршруте" 
+        puts "Станция уже в маршруте"
       else
-        puts "Добавили" 
         @routes[add_station_route].add_station(@stations[intermediate_station])
-      end 
+        puts "Добавили"
+      end
     end
   end
 
   def train_visualize
     number = 1
-    @trains.each do |train| 
+    @trains.each do |train|
       if train.is_a?(TrainPass)
-      puts "#{number}) Чмеха пасажирська -> #{train.number} <- вагонов: #{train.wagons.size}" 
+      puts "#{number}) Чмеха пасажирська -> #{train.number} <- вагонов: #{train.wagons.size}"
       number += 1
       elsif train.is_a?(TrainCargo)
-        puts "#{number}) Чмеха грузова -> #{train.number} <-<- вагонов: #{train.wagons.size}" 
+        puts "#{number}) Чмеха грузова -> #{train.number} <-<- вагонов: #{train.wagons.size}"
       number += 1
       end
     end
@@ -290,7 +294,7 @@ class RailRoad
     @routes.each do |rout|
       name_route = ""
       rout.stations.each do |station|
-        name_route += "->" + station.names 
+        name_route += "->" + station.name
       end
       puts "#{number})  #{name_route}"
       number += 1
@@ -298,11 +302,15 @@ class RailRoad
   end
 
   def station_visualize
-    number = 1
-    @stations.each do |station| 
-      puts "#{number}) -> #{station.names} <-" 
-      number += 1
+    # number = 1
+    # @stations.each do |station|
+    #   puts "#{number}) -> #{station.names} <-"
+    #   number += 1
+    # end
+    @stations.each.with_index(1) do |station, index|
+      puts "#{index}) -> #{station.name} <-"
     end
+
   end
 
 end
