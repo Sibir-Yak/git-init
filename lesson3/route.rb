@@ -9,7 +9,8 @@ class Route
   end
 
   def validate!
-    raise "YO BRO!!! less than 2 stations on the route" if @stations.size < 2
+    raise LessThanTwoStationsError if @stations.size < 2
+    raise LessThanTwoStationsError if @stations.include?(nil)
   end
 
   def add_station(point)       #Может добавлять промежуточную станцию в список
@@ -26,6 +27,7 @@ class Route
   end
 
   def delete_station(point)    #Может удалять промежуточную станцию из списка
+    raise TrainStationNowError if  point.trains.any?
     raise FirstStationDestroyError if point == stations[0]
     raise LastStationDestroyError if point == stations[-1]
 

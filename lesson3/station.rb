@@ -13,9 +13,9 @@ class Station
   end
 
   def validate!
-    raise "YO BRO!!! station can`t be nil" if @name.nil?
-    raise "YO BRO!!! station name less than 2 characters" if @name.length < 2
-    raise "YO BRO!!! only numbers in the title" unless @name =~ /[a-z]+\d*/i
+    raise NameNilError if @name.nil?
+    raise SmallNameLenghtError if @name.length < 2
+    raise OnlyNambersNameError unless @name =~ /[a-z]+\d*/i
   end
   # Метот вывода всех станций в класса
   def self.all

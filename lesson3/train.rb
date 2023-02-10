@@ -47,26 +47,29 @@ class Train
   end
 
   def docking(wagon)         #стыковка  вагона
+    # raise TrainRunError if @speed != 0
     @wagons << wagon
   end
 
   def current_station
-    @route.stations[@station_index].name
+    @route.stations[@station_index]
   end
 
   def next_station
     if @station_index < @route.stations.size - 1
-      @route.stations[@station_index+1].name
+      @route.stations[@station_index+1]
     end
   end
 
   def previous_station
     if @station_index >= 1
-      @route.stations[@station_index-1].name
+      @route.stations[@station_index-1]
     end
   end
 
   def undocking       #расстыковка вагона
+    raise TrainWagonNilError if @wagons.empty?
+    raise TrainRunError if @speed != 0
     if @speed == 0 && @wagons.any?
       @wagons.delete_at(0)
     end
@@ -87,35 +90,21 @@ class Train
   # end
 
   def go_next_station              #Может перемещаться между станциями, указанными в маршруте. Перемещение возможно вперед, но только на 1 станцию за раз
+    raise LastStationError if @station_index == @route.stations.size - 1
     if @station_index < @route.stations.size - 1
       @station_index += 1
       @route.stations[@station_index - 1].train_go(self)   #Кикаем паравоз
       @route.stations[@station_index].add_train(self)
-      @now_station = @route.stations[@station_index].name
-    else
-      error = 0
     end
-    raise LastStationError if error == 0
   end
 
-  
-  
-  
-  
-  
-  
-  
-  def go_previous_station          #Может перемещаться между станциями, указанными в маршруте. Перемещение возможно  назад, но только на 1 станцию за раз
-    # Создать исключение на базе проверки на нулевую ( несуществующую станцию)
+  def go_previous_station                                #Может перемещаться между станциями, указанными в маршруте. Перемещение возможно  назад, но только на 1 станцию за раз
+    raise FirstStationError if @station_index == 0       #Ошибка выводит иформацию завершает действие
     if @station_index >= 1
     @station_index -= 1
     @route.stations[@station_index + 1].train_go(self)   #Кикаем паравоз
-    @route.stations[@station_index].add_train(self)
-    @now_station = @route.stations[@station_index].name
-    else
-      error = 1
+    @route.stations[@station_index].add_train(self)      #Добавляем паровоз
     end
-    raise FirstStationError if error == 1
   end
 end
 

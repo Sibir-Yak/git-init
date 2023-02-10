@@ -155,6 +155,8 @@ class RailRoad
     puts "Введите названи станции"
     name_station = gets.chomp
     @stations << Station.new(name_station)
+  rescue StandardError => e
+    puts e.message
   end
 
   def route_create
@@ -167,6 +169,8 @@ class RailRoad
     station2 = gets.chomp.to_i
     if station1 == station2
       puts "Введены одинаковые станции"
+    elsif station1 == 0 || station2 == 0
+      puts "Вы не ввели номер станции"
     else
       @routes << Route.new(@stations[station1-1], @stations[station2-1])
       puts "Маршрут добавлен:"
@@ -215,11 +219,10 @@ class RailRoad
       number += 1
     end
     number_station_for_delete = gets.chomp.to_i-1
-    if @routes[route_for_delete_station].stations[number_station_for_delete].trains.empty?
-      @routes[route_for_delete_station].delete_station(@routes[route_for_delete_station].stations[number_station_for_delete])
-    else
-      puts "На станции поезд удалять ее нельзя"
-    end
+    puts "Вы выбрали станцию #{@routes[route_for_delete_station].stations[number_station_for_delete].name}"
+    @routes[route_for_delete_station].delete_station(@routes[route_for_delete_station].stations[number_station_for_delete])
+    puts "Удалили из маршрута"
+    puts "Теперь: #{@routes[route_for_delete_station].add_name_route}"
     rescue StandardError => e
       puts e.message
   end
@@ -254,11 +257,11 @@ class RailRoad
     when 1
       train_busy[train_to_go].go_next_station
       puts "Вы на станции:"
-      puts train_busy[train_to_go].now_station
+      puts train_busy[train_to_go].current_station.name
     when 2
       train_busy[train_to_go].go_previous_station
       puts "Вы на станции:"
-      puts train_busy[train_to_go].now_station
+      puts train_busy[train_to_go].current_station.name
     else
       puts "Опять за старое?"
       puts "Гоу в первое меню"
@@ -272,17 +275,15 @@ class RailRoad
     puts "Выберете поезд к какому добавляем вагон"
     train_visualize
     train_add_wagon = gets.chomp.to_i - 1
-    if @trains[train_add_wagon].speed == 0
-      if @trains[train_add_wagon].is_a?(TrainPass)
-        @trains[train_add_wagon].docking(WagonPass.new)
-      else
-        @trains[train_add_wagon].docking(WagonCargo.new)
-      end
+    if @trains[train_add_wagon].is_a?(TrainPass)
+      @trains[train_add_wagon].docking(WagonPass.new)
     else
-      puts "Паравозик в движении стыковка неможлива"
+      @trains[train_add_wagon].docking(WagonCargo.new)
     end
     puts "Вагончик добавлен"
     puts "Теперь их #{@trains[train_add_wagon].wagons.size}"
+  rescue StandardError => e
+    puts e.message
   end
 
 # 3.5) Отцепить вагоны от поезда
@@ -290,15 +291,18 @@ class RailRoad
     puts "Выберете поезд у которого отцепляем вагон"
     train_visualize
     train_delete_wagon = gets.chomp.to_i-1
-    if @trains[train_delete_wagon].speed == 0 && @trains[train_delete_wagon].wagons.any?
-      @trains[train_delete_wagon].undocking
-      puts "Вагончик отбавлен"
-      puts "вагонов осталось #{@trains[train_delete_wagon].wagons.size}"
-    elsif @trains[train_delete_wagon].speed > 0
-      puts "Поезд в движении, расстыковка неможлива"
-    else
-      puts "Вагоны усё"
-    end
+    @trains[train_delete_wagon].undocking
+    # if @trains[train_delete_wagon].speed == 0 && @trains[train_delete_wagon].wagons.any?
+    #   @trains[train_delete_wagon].undocking
+    #   puts "Вагончик отбавлен"
+    #   puts "вагонов осталось #{@trains[train_delete_wagon].wagons.size}"
+    # elsif @trains[train_delete_wagon].speed > 0
+    #   puts "Поезд в движении, расстыковка неможлива"
+    # else
+    #   puts "Вагоны усё"
+    # end
+  rescue StandardError => e
+    puts e.message
   end
 # 3.6 Добавить станцию из маршрута
   def add_station_to_route
