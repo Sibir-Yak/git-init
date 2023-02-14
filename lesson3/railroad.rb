@@ -174,34 +174,38 @@ class RailRoad
     else
       @routes << Route.new(@stations[station1-1], @stations[station2-1])
       puts "Маршрут добавлен:"
-      @routes[-1].add_name_route
+      @routes[-1].showing_stations
     end
+  rescue StandardError => e
+    puts e.message
   end
 
 # 3.1)Назаначить маршрут поезду
   def assign_train_route
     puts "Выберите поезд из списка"
-      trains_free = @trains.select { |train| train.route == nil}
-      number = 1
-      if trains_free.empty?
-        puts "Свободных поездов больше нет"
-      end
-      trains_free.each do |tr|
-        puts "#{number}) Поезд: #{tr.number} свободный"
-        number += 1
-      end
-      train_for = gets.chomp.to_i-1
-      puts "Введите номер маршрута"
-      rout_visualize
-      rout_for = gets.chomp.to_i-1
-      if train_for < 0 || rout_for < 0
-        puts "Вы кажись что-то юлите"
-        puts "Марш в первое меню"
-        return
-      end
-      trains_free[train_for].add_route(@routes[rout_for])
-      puts "Поезду #{trains_free[train_for].number} назнаен маршрут:"
-      @routes[rout_for].add_name_route
+    trains_free = @trains.select { |train| train.route == nil}
+    number = 1
+    if trains_free.empty?
+      puts "Свободных поездов больше нет"
+    end
+    trains_free.each do |tr|
+      puts "#{number}) Поезд: #{tr.number} свободный"
+      number += 1
+    end
+    train_for = gets.chomp.to_i-1
+    puts "Введите номер маршрута"
+    rout_visualize
+    rout_for = gets.chomp.to_i-1
+    if train_for < 0 || rout_for < 0
+      puts "Вы кажись что-то юлите"
+      puts "Марш в первое меню"
+      return
+    end
+    trains_free[train_for].add_route(@routes[rout_for])
+    puts "Поезду #{trains_free[train_for].number} назнаен маршрут:"
+    @routes[rout_for].showing_stations
+  rescue StandardError => e
+    puts e.message
   end
 
 # 3.2) Удалить станцию из маршрута
@@ -209,7 +213,7 @@ class RailRoad
     puts "Из какого маршрута хотите удалить станцию?"
     puts "Введите номер"
     rout_visualize
-    # @routes.each(&:add_name_route)
+    # @routes.each(&:showing_stations)
     route_for_delete_station = gets.chomp.to_i-1
     puts "Какую станцию удаляем ?"
     puts "Введите номер"
@@ -222,9 +226,9 @@ class RailRoad
     puts "Вы выбрали станцию #{@routes[route_for_delete_station].stations[number_station_for_delete].name}"
     @routes[route_for_delete_station].delete_station(@routes[route_for_delete_station].stations[number_station_for_delete])
     puts "Удалили из маршрута"
-    puts "Теперь: #{@routes[route_for_delete_station].add_name_route}"
-    rescue StandardError => e
-      puts e.message
+    puts "Теперь: #{@routes[route_for_delete_station].showing_stations}"
+  rescue StandardError => e
+    puts e.message
   end
 
 # 3.3) Переместить поезд по маршруту
@@ -292,26 +296,17 @@ class RailRoad
     train_visualize
     train_delete_wagon = gets.chomp.to_i-1
     @trains[train_delete_wagon].undocking
-    # if @trains[train_delete_wagon].speed == 0 && @trains[train_delete_wagon].wagons.any?
-    #   @trains[train_delete_wagon].undocking
-    #   puts "Вагончик отбавлен"
-    #   puts "вагонов осталось #{@trains[train_delete_wagon].wagons.size}"
-    # elsif @trains[train_delete_wagon].speed > 0
-    #   puts "Поезд в движении, расстыковка неможлива"
-    # else
-    #   puts "Вагоны усё"
-    # end
   rescue StandardError => e
     puts e.message
   end
-# 3.6 Добавить станцию из маршрута
+# 3.6 Добавить станцию в маршрута
   def add_station_to_route
     puts "В какой маршрут хотите добавить станцию?"
     puts "Введите номер"
     rout_visualize
-    # @routes.each(&:add_name_route)
+    # @routes.each(&:showing_stations)
     # @routes.each do |route|
-    #   route.add_name_route
+    #   route.showing_stations
     # end
     add_station_route = gets.chomp.to_i-1
     if add_station_route + 1 > @routes.size
@@ -328,6 +323,8 @@ class RailRoad
         puts "Добавили"
       end
     end
+  rescue StandardError => e
+    puts e.message
   end
 
 # 3.7 Увеличиваем скорость паровозу
@@ -337,16 +334,10 @@ class RailRoad
     train_speed_up = gets.chomp.to_i-1
     puts "На какую скорость? (в разумных пределах)"
     speed_for_train = gets.chomp.to_i
-    if speed_for_train >= 200
-      puts "Это за гранью разума"
-    elsif speed_for_train < 0
-      puts "Не гневи Бога поезда задом так не ураганят"
-    elsif speed_for_train == 0
-      puts "ноль не катит, тормозим другим способом"
-    else
-      @trains[train_speed_up].speed_up(speed_for_train)
-      puts "Запускаем чмеху #{@trains[train_speed_up].number} на орбиту со скоростью #{@trains[train_speed_up].speed} км.ч."
-    end
+    @trains[train_speed_up].speed_up(speed_for_train)
+    puts "Запускаем чмеху #{@trains[train_speed_up].number} на орбиту со скоростью #{@trains[train_speed_up].speed} км.ч."
+  rescue StandardError => e
+    puts e.message
   end
 
 # 3.8 Уменьшаем скорость паровозу
@@ -354,15 +345,13 @@ class RailRoad
     puts "Какую чмеху тормозим?"
     train_visualize
     train_speed_down = gets.chomp.to_i-1
-    if @trains[train_speed_down].speed == 0
-      puts "Бро и так стоит же"
-      return
-    end
     puts "На какую скорость тормозим?"
     puts "(если меньше текущей то приведет к остановке)"
     speed_for_train = gets.chomp.to_i
     @trains[train_speed_down].speed_down(speed_for_train)
     puts "Скорость чмехи #{@trains[train_speed_down].number} упала дo #{@trains[train_speed_down].speed} км.ч."
+  rescue StandardError => e
+    puts e.message
   end
 
 # 3.9 Останавливаем чухню
@@ -370,12 +359,10 @@ class RailRoad
     puts "Какую чухню стопаем?"
     train_visualize
     train_speed_stop = gets.chomp.to_i-1
-    if @trains[train_speed_stop].speed == 0
-      puts "Бро и так стоит же"
-      return
-    end
     @trains[train_speed_stop].stop
     puts "Чухня #{@trains[train_speed_stop].number} стопнута"
+  rescue StandardError => e
+    puts e.message
   end
 
   def train_visualize
@@ -393,7 +380,7 @@ class RailRoad
 
   def rout_visualize
     number = 1
-    # @routes.each(&:add_name_route)
+    # @routes.each(&:showing_stations)
     @routes.each do |rout|
       name_route = ""
       rout.stations.each do |station|

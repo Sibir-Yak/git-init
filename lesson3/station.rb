@@ -1,5 +1,7 @@
 class Station
   include InstanceCounter
+  include Valid
+
   attr_reader :name, :trains      #Может возвращать список всех поездов на станции, находящиеся в текущий момент
   # Создаем переменную масив станцій
   @@object_station = []
@@ -13,9 +15,7 @@ class Station
   end
 
   def validate!
-    raise NameNilError if @name.nil?
-    raise SmallNameLenghtError if @name.length < 2
-    raise OnlyNambersNameError unless @name =~ /[a-z]+\d*/i
+    raise StationNameError unless @name =~ /[a-z]+\d*/i || @name.nil?
   end
   # Метот вывода всех станций в класса
   def self.all
@@ -23,10 +23,12 @@ class Station
   end
 
   def add_train(train)      #Добавляем поезда
+    raise ObjectTypeError unless train.is_a?(Train)
     @trains << train
   end
 
   def train_go(train)     #Отправляем поезда
+    raise ObjectTypeError unless train.is_a?(Train)
     @trains.delete(train)
   end
 

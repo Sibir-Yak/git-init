@@ -1,15 +1,16 @@
 class Train
   include BrandName
   include InstanceCounter
+  include Valid
 
   attr_reader :number, :speed, :wagons, :route, :now_station
-  NUMBER_TRAIN = /^[a-z0-9]{3}-[a-z0-9]{2}$/i
+  NUMBER_FORMAT = /^[a-z0-9]{3}-*[a-z0-9]{2}$/i
   @@all_trains = []
 
   def initialize(number)       #Имеет номер (произвольная строка)
-    @speed = 0
     @number = number
     validate!
+    @speed = 0
     @wagons = []
     @now_station = nil
     @route = nil
@@ -20,8 +21,8 @@ class Train
 
   def validate!
     raise TrainNumberNilError if @number.nil?
-    raise TrainNumberFormatError if @number !~ NUMBER_TRAIN
-    raise TrainNumberNotUniqError if @@all_trains.find { |a| a.number == @number }
+    raise TrainNumberFormatError if @number !~ NUMBER_FORMAT
+    raise TrainNumberNotUniqError if @@all_trains.reject{ |train| train == self }.find{ |a| a.number == @number }   #Берем все созданные трейн и находим в каждом @номер когда совпадение то ошибка.
   end
 
   def self.find(number_train)
@@ -29,13 +30,16 @@ class Train
   end
 
   def speed_up(speed)            #Может набирать скорость
-    if  speed > 0 && speed < 200
-      @speed += speed
-    end
+    raise NegativeSpeedError if speed < 0
+    raise CrazySpeedError if speed > 200
+
+    @speed += speed
   end
 
   def speed_down(speed)
-    if speed >= 0  && speed < @speed
+    raise StopStandingError if @speed == 0
+
+    if speed < @speed
       @speed -= speed
     else
       stop
@@ -43,11 +47,12 @@ class Train
   end
 
   def stop           #Может тормозить (сбрасывать скорость до нуля)
+    raise StopStandingError if @speed == 0
     @speed = 0
   end
 
   def docking(wagon)         #стыковка  вагона
-    # raise TrainRunError if @speed != 0
+    raise TrainRunError if @speed != 0
     @wagons << wagon
   end
 
@@ -70,12 +75,13 @@ class Train
   def undocking       #расстыковка вагона
     raise TrainWagonNilError if @wagons.empty?
     raise TrainRunError if @speed != 0
-    if @speed == 0 && @wagons.any?
-      @wagons.delete_at(0)
-    end
+
+    @wagons.delete_at(0)
   end
 
   def add_route(route)   #Правильно
+    raise ObjectTypeError unless route.is_a?(Route)
+
     @route = route
     start_station = @route.stations[0]
     start_station.add_train(self)
@@ -90,21 +96,19 @@ class Train
   # end
 
   def go_next_station              #Может перемещаться между станциями, указанными в маршруте. Перемещение возможно вперед, но только на 1 станцию за раз
-    raise LastStationError if @station_index == @route.stations.size - 1
-    if @station_index < @route.stations.size - 1
-      @station_index += 1
-      @route.stations[@station_index - 1].train_go(self)   #Кикаем паравоз
-      @route.stations[@station_index].add_train(self)
-    end
+    raise LastStationError unless next_station
+
+    current_station.train_go(self)   #Кикаем паравоз
+    next_station.add_train(self)
+    @station_index += 1
   end
 
   def go_previous_station                                #Может перемещаться между станциями, указанными в маршруте. Перемещение возможно  назад, но только на 1 станцию за раз
-    raise FirstStationError if @station_index == 0       #Ошибка выводит иформацию завершает действие
-    if @station_index >= 1
+    raise FirstStationError unless previous_station      #Ошибка выводит иформацию завершает действие
+
+    current_station.train_go(self)   #Кикаем паравоз
+    previous_station.add_train(self)      #Добавляем паровоз
     @station_index -= 1
-    @route.stations[@station_index + 1].train_go(self)   #Кикаем паравоз
-    @route.stations[@station_index].add_train(self)      #Добавляем паровоз
-    end
   end
 end
 
