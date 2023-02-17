@@ -1,5 +1,5 @@
 class FirstStationError < StandardError
-  def initialize(msq = "Вы на первой станции, только вперёд")
+  def initialize(msg = "Вы на первой станции, только вперёд")
     super
   end
 end

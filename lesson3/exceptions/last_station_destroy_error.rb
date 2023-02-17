@@ -1,5 +1,5 @@
 class LastStationDestroyError < StandardError
-  def initialize(msq ="Последняя станция не удаляем")
+  def initialize(msg ="Последняя станция не удаляем")
     super
   end
 end

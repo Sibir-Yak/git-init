@@ -15,7 +15,7 @@ class Station
   end
 
   def validate!
-    raise StationNameError unless @name =~ /[a-z]+\d*/i || @name.nil?
+    raise StationNameError if @name !~ /[a-z]+\d*/i
   end
   # Метот вывода всех станций в класса
   def self.all

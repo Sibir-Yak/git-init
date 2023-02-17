@@ -13,7 +13,6 @@ class Route
     raise LessThanTwoStationsError if @stations.size < 2
     raise LessThanTwoStationsError if @stations.include?(nil)
     raise ObjectTypeError unless @stations[0].is_a?(Station) && @stations[1].is_a?(Station)
-    # raise ObjectTypeError unless @stations.include?(is_a?(Station))
   end
 
   def add_station(point)       #Может добавлять промежуточную станцию в список

@@ -3,8 +3,8 @@ class Train
   include InstanceCounter
   include Valid
 
-  attr_reader :number, :speed, :wagons, :route, :now_station
-  NUMBER_FORMAT = /^[a-z0-9]{3}-*[a-z0-9]{2}$/i
+  attr_reader :number, :speed, :wagons, :route
+  NUMBER_FORMAT = /^[a-z0-9]{3}-?[a-z0-9]{2}$/i
   @@all_trains = []
 
   def initialize(number)       #Имеет номер (произвольная строка)
@@ -12,7 +12,6 @@ class Train
     validate!
     @speed = 0
     @wagons = []
-    @now_station = nil
     @route = nil
     @station_index = 0
     @@all_trains << self
@@ -37,6 +36,7 @@ class Train
   end
 
   def speed_down(speed)
+    raise NegativeSpeedError if speed < 0
     raise StopStandingError if @speed == 0
 
     if speed < @speed
@@ -73,7 +73,7 @@ class Train
   end
 
   def undocking       #расстыковка вагона
-    raise TrainWagonNilError if @wagons.empty?
+    raise TrainWagonEmptyError if @wagons.empty?
     raise TrainRunError if @speed != 0
 
     @wagons.delete_at(0)
@@ -88,12 +88,6 @@ class Train
 
     start_station
   end
-
-  # def add_route(route)   #Не правильно
-  #   @route = route
-  #   puts @route.stations[0].name
-  #   @route.stations[0].add_train(self)
-  # end
 
   def go_next_station              #Может перемещаться между станциями, указанными в маршруте. Перемещение возможно вперед, но только на 1 станцию за раз
     raise LastStationError unless next_station
