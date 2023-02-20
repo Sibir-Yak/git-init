@@ -1,42 +1,40 @@
 class Station
   include InstanceCounter
-  attr_reader :name, :trains      #Может возвращать список всех поездов на станции, находящиеся в текущий момент
+  include Valid
 
+  attr_reader :name, :trains      #Может возвращать список всех поездов на станции, находящиеся в текущий момент
   # Создаем переменную масив станцій
   @@object_station = []
 
   def initialize(name)   #Имеет название, которое указывается при ее создании
     @name = name
+    validate!
     @trains = []
     @@object_station << self
     register_instance
+  end
+
+  def validate!
+    raise StationNameError if @name !~ /[a-z]+\d*/i
   end
   # Метот вывода всех станций в класса
   def self.all
     @@object_station
   end
 
-  def train_type2    #Возвращаем список поездов на станции по типу
-    puts "Пасажирских #{ @trains.select { |tr| tr.is_a?(TrainPass)}.size }"  #Перебираем с условием
-    puts "Грузовых #{ @trains.select { |tr| tr.is_a?(TrainCargo) }.size }"     #Перебираем с антиусловием
-  end # rr.stations[0].train_type2
-
-  # def train_type(type)     #Возвращаем список поездов на станции по типу
-  #   @trains.each do |train|
-  #     if train.type == type
-  #       puts "По указанному вами типу #{type}, есть такие поезда #{train}"
-  #       puts "Его номер #{train.number}"
-  #       puts "У  него #{train.wagons} вагонов"
-  #     end
-  #   end
-  # end
-
   def add_train(train)      #Добавляем поезда
+    raise ObjectTypeError unless train.is_a?(Train)
     @trains << train
   end
 
   def train_go(train)     #Отправляем поезда
+    raise ObjectTypeError unless train.is_a?(Train)
     @trains.delete(train)
   end
+
+  # def train_type2    #Возвращаем список поездов на станции по типу
+  #   puts @trains.select { |tr| tr.is_a?(TrainPass)}.size  #Перебираем с условием
+  #   puts @trains.select { |tr| tr.is_a?(TrainCargo)}.size
+  # end
 
 end
