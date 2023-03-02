@@ -21,6 +21,22 @@ class Station
   def self.all
     @@object_station
   end
+# написать метод, который принимает блок и проходит по всем поездам на станции, передавая каждый поезд в блок.
+  def number_type_quantity(station, &block)
+    @trains.each do |train|
+      # yield("Станция-> " + train.current_station.name.to_s)
+      # yield(";   Номер-> " + train.number)
+      # yield(";   Тип-> " + train.class.to_s[5..8])
+      # yield(";   Количество вагонов-> " + train.wagons.size.to_s)
+      # puts
+      a = train.current_station.name.to_s
+      b = train.number
+      c = train.class.to_s[5..8]
+      d = train.wagons.size.to_s
+      yield(a, b, c, d)
+    end
+    # yield(number, type, quantity)
+  end
 
   def add_train(train)      #Добавляем поезда
     raise ObjectTypeError unless train.is_a?(Train)

@@ -17,8 +17,8 @@ puts "Бобро пожаловать на Железную Дорогу"
 puts "вас ожитают сокрушительные злоключения"
 
 rr = RailRoad.new
-# rr.seed
-# rr.menu
+rr.seed
+rr.menu
 
 # test
 # rr.trains[0].
