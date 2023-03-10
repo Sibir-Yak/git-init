@@ -51,6 +51,7 @@ class RailRoad
     @trains[1].add_route(@routes[0])
     @trains[1].docking(WagonPass.new(200))
     @trains[2].docking(WagonCargo.new(150))
+    @trains[2].add_route(@routes[0])
   end
 
   private
@@ -118,15 +119,6 @@ class RailRoad
         puts station.name
       end
     when 2
-      # @stations.each do |station|
-      #   if station.trains.empty?
-      #     puts "А на станции #{station.name} нема паравозиков"
-      #   end
-      #   station.trains.each do |train|
-      #     puts "На станции #{station.name} находится поезд номер #{train.number}"
-      #   end
-      # end
-      # block = Proc.new{ |station| print station }
       block = lambda { |a, b, c, d|
         puts
         print "Станция-> " + a
@@ -135,7 +127,7 @@ class RailRoad
         print ";   Количество вагонов-> " + d
       }
       @stations.each do |station|
-        station.number_type_quantity(station, &block) # Нужна ли станция??
+        station.number_type_quantity(&block)
       end
       puts
     when 3
@@ -422,6 +414,7 @@ class RailRoad
     else
       trains[user_choice_train].wagons[user_choice_wagon].upload
       puts "Добавляем одного пассажира"
+      puts"Осталось места #{trains[user_choice_train].wagons[user_choice_wagon].free}"
     end
   rescue StandardError => e
     puts e.message

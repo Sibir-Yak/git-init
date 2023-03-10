@@ -3,7 +3,7 @@ class WagonPass < Wagon
 # атрибут общего кол-ва мест (задается при создании вагона)
   def initialize(seats)
     @container = seats
-    @seats = seats
+    @seats = 0
     validate!
     super()
   end
@@ -13,16 +13,16 @@ class WagonPass < Wagon
     raise TooMuchVolumeError if @container > 200
   end
 # Метод который занимет места по 1 за раз
-  def upload#(_load)
-    @seats -= 1
-    raise TooMuchUploadError if 0 >= @seats
+  def upload(_load = 0)
+    raise TooMuchUploadError if  @seats >= @container
+    @seats += 1
   end
 # Возвращает количество занятых мест в вагоне
   def busy
-    @container - @seats
+    @seats
   end
 # Возвращающий кол-во свободных мест в вагоне.
   def free
-    @seats
+    @container - @seats
   end
 end

@@ -22,7 +22,7 @@ class Station
     @@object_station
   end
 # написать метод, который принимает блок и проходит по всем поездам на станции, передавая каждый поезд в блок.
-  def number_type_quantity(station, &block)
+  def number_type_quantity(&block)
     @trains.each do |train|
       # yield("Станция-> " + train.current_station.name.to_s)
       # yield(";   Номер-> " + train.number)
