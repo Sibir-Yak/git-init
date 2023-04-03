@@ -104,6 +104,29 @@ class Train
     previous_station.add_train(self)      #Добавляем паровоз
     @station_index -= 1
   end
+# написать метод, который принимает блок и проходит по всем вагонам поезда
+# (вагоны должны быть во внутреннем массиве),
+# передавая каждый объект вагона в блок.
+  def list_wagons_trains(&block)
+    number = 0
+    wagons.each do |wagon|
+      number += 1
+      type_wagon = wagon.class.to_s[5..9]
+      free_volume = wagon.free
+      busy_volume = wagon.busy
+      yield(number, type_wagon, free_volume, busy_volume)
+    end
+  end
 end
 
-
+# @trains.each do |train|
+#   # yield("Станция-> " + train.current_station.name.to_s)
+#   # yield(";   Номер-> " + train.number)
+#   # yield(";   Тип-> " + train.class.to_s[5..8])
+#   # yield(";   Количество вагонов-> " + train.wagons.size.to_s)
+#   # puts
+#   a = train.current_station.name.to_s
+#   b = train.number
+#   c = train.class.to_s[5..8]
+#   d = train.wagons.size.to_s
+#   yield(a, b, c, d)

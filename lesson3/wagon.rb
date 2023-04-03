@@ -1,7 +1,16 @@
 class Wagon
 include BrandName
-  def initialize
-    @wheels = 8
-    @container = 50
+  def initialize(_loads = 0); end
+
+  def upload(_loads = 0)
+    raise "Not Implemented"
+  end
+
+  def free
+    raise "Not Implemented"
+  end
+
+  def busy
+    raise "Not Implemented"
   end
 end

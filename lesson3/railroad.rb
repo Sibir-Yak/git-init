@@ -45,8 +45,13 @@ class RailRoad
     @routes << Route.new(@stations[0], @stations[1])
     @routes << Route.new(@stations[1], @stations[4])
     @routes[0].add_station(@stations[3])
-    @trains[0].docking(WagonPass.new)
-    @trains[0].docking(WagonPass.new)
+    @trains[0].docking(WagonPass.new('100'))
+    @trains[0].docking(WagonPass.new('120'))
+    @trains[0].add_route(@routes[0])
+    @trains[1].add_route(@routes[0])
+    @trains[1].docking(WagonPass.new('200'))
+    @trains[2].docking(WagonCargo.new('150'))
+    @trains[2].add_route(@routes[0])
   end
 
   private
@@ -76,6 +81,7 @@ class RailRoad
     puts "7) Увееличить скорость паравозу"
     puts "8) Уменьшить скорость паравозу"
     puts "9) Остановить паровоз"
+    puts "10) Занять место в вагоне"
     user_choice = gets.chomp.to_i
     case user_choice
     when 1
@@ -96,6 +102,8 @@ class RailRoad
       speed_train_down
     when 9
       train_stoped
+    when 10
+      upload_wagon
     end
   end
 
@@ -104,19 +112,22 @@ class RailRoad
     puts "2) Вывести список поезов на станции"
     puts "3) Узнать какой поезд двигаеться"
     puts "4) Информация о паравозах"
+    puts "5) Информация по количеству свободного места в вагонах на станции"
     case gets.chomp.to_i    # Можно обойтись без одноразовой переменной.
     when 1
       @stations.each do |station|
         puts station.name
       end
     when 2
+      block = lambda { |a, b, c, d|
+        puts
+        print "Станция-> " + a
+        print ";   Номер-> " + b
+        print ";   Тип-> " + c
+        print ";   Количество вагонов-> " + d
+      }
       @stations.each do |station|
-        if station.trains.empty?
-          puts "А на станции #{station.name} нема паравозиков"
-        end
-        station.trains.each do |train|
-          puts "На станции #{station.name} находится поезд номер #{train.number}"
-        end
+        station.number_type_quantity(&block)
       end
       puts
     when 3
@@ -129,6 +140,11 @@ class RailRoad
       end
     when 4
       train_visualize
+      puts
+    when 5
+      puts "Выбирете нужную станцию"
+      station_visualize
+      wagon_visualize
       puts
     end
   end
@@ -279,13 +295,24 @@ class RailRoad
     puts "Выберете поезд к какому добавляем вагон"
     train_visualize
     train_add_wagon = gets.chomp.to_i - 1
-    if @trains[train_add_wagon].is_a?(TrainPass)
-      @trains[train_add_wagon].docking(WagonPass.new)
+    selected_train = @trains[train_add_wagon]
+    if selected_train.is_a?(TrainPass)
+      puts "Выбран пасажирский вагон"
+      puts "Сколько мест будет в вагоне?"
+      puts "(Максимум 200)"
+      seats = gets.chomp
+      selected_train.docking(WagonPass.new(seats))
+    elsif selected_train.is_a?(TrainCargo)
+      puts "Выбран грузовой вагон"
+      puts "Сколько груза будет помещаться в вагон?"
+      puts "(Максимум 200)"
+      loads = gets.chomp
+      selected_train.docking(WagonCargo.new(loads))
     else
-      @trains[train_add_wagon].docking(WagonCargo.new)
+      puts "Вы выбрали чепуху"
     end
     puts "Вагончик добавлен"
-    puts "Теперь их #{@trains[train_add_wagon].wagons.size}"
+    puts "Теперь их #{selected_train.wagons.size}"
   rescue StandardError => e
     puts e.message
   end
@@ -365,15 +392,45 @@ class RailRoad
     puts e.message
   end
 
+# 3.10 Загрузить вагон
+  def upload_wagon
+    trains = []
+    puts "Выберите поезд для загрузки"
+    # block
+    @trains.each.with_index(1) do |train, index|
+      if train.wagons.any?
+        puts "#{index}) -> #{train.number} <-"
+        trains << train
+      end
+    end
+    user_choice_train = gets.chomp.to_i - 1
+    puts "Выберете вагон"
+    block(trains[user_choice_train])
+    user_choice_wagon = gets.chomp.to_i - 1
+    wagon = trains[user_choice_train].wagons[user_choice_wagon]
+    if wagon.is_a?(WagonCargo)
+      puts "Сколько тон грузим? Осталось места #{wagon.free}"
+      user_choice_load = gets.chomp
+      wagon.upload(user_choice_load)
+      puts "Добавляем #{user_choice_load} тонн груза"
+    else
+      wagon.upload
+      puts "Добавляем одного пассажира"
+      puts"Осталось места #{wagon.free}"
+    end
+  rescue StandardError => e
+    puts e.message
+  end
+
   def train_visualize
     number = 1
     @trains.each do |train|
       if train.is_a?(TrainPass)
-      puts "#{number}) Чмеха пасажирська -> #{train.number} <- вагонов: #{train.wagons.size} скорость: #{train.speed} "
-      number += 1
+        puts "#{number}) Чмеха пасажирська -> #{train.number} <- вагонов: #{train.wagons.size} скорость: #{train.speed} "
+        number += 1
       elsif train.is_a?(TrainCargo)
         puts "#{number}) Чмеха грузова -> #{train.number} <-<- вагонов: #{train.wagons.size} скорость: #{train.speed}"
-      number += 1
+        number += 1
       end
     end
   end
@@ -400,7 +457,35 @@ class RailRoad
     @stations.each.with_index(1) do |station, index|
       puts "#{index}) -> #{station.name} <-"
     end
+  end
 
+  def wagon_visualize
+    user_choice = gets.chomp.to_i - 1
+    # block = proc { |number, type_wagon, free_volume, busy_volume|
+    #   puts
+    #   print "Номер вагона-> " + number.to_s
+    #   print ";   Тип вагона-> " + type_wagon
+    #   print ";   Количество свободного места-> " + free_volume.to_s
+    #   puts ";   Количество занятого места-> " + busy_volume.to_s
+    # }
+    @stations[user_choice].trains.each do |train|
+      puts
+      # # train.block
+      puts train.number
+      # train.list_wagons_trains(train, &block)
+      block(train)
+    end
+  end
+
+  def block(train)
+    block = proc { |number, type_wagon, free_volume, busy_volume|
+    # puts
+    print "Номер вагона-> " + number.to_s
+    print ";   Тип вагона-> " + type_wagon
+    print ";   Количество свободного места-> " + free_volume.to_s
+    puts ";   Количество занятого места-> " + busy_volume.to_s
+    }
+    train.list_wagons_trains(&block)
   end
 
 end
