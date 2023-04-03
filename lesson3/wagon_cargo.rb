@@ -1,20 +1,25 @@
 class WagonCargo < Wagon
-  def initialize(load)
-    @container = load
+  def initialize(loads)
+    super
+    @container = loads
     @load = 0
     validate!
-    super()
+    @container = loads.to_i
   end
 
   def validate!
-    raise WagonloadSeatsEmptyError if @container <= 0 || @container == nil
-    raise TooMuchVolumeError if @container> 200
+    raise WagonLoadSeatsEmptyError if @container.to_i.to_s != @container
+    raise TooMuchVolumeError if @container.to_i > 200
   end
 # метод, которые "занимает объем" в вагоне (объем указывается в качестве параметра метода)
-  def upload(load)
-    raise TooMuchUploadError if load > @container - @load
-    raise WagonLoadSeatsEmptyError if load == 0 || load == nil
-    @load += load
+  def upload(loads)
+    if loads.include?(".")
+      raise WagonLoadSeatsEmptyError if loads.to_f.to_s != loads
+    else
+      raise WagonLoadSeatsEmptyError if loads.to_i.to_s != loads
+    end
+    raise TooMuchUploadError if loads.to_f > free
+    @load += loads.to_f
   end
 # метод, который возвращает занятый объем
   def busy

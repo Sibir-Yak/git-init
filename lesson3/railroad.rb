@@ -45,12 +45,12 @@ class RailRoad
     @routes << Route.new(@stations[0], @stations[1])
     @routes << Route.new(@stations[1], @stations[4])
     @routes[0].add_station(@stations[3])
-    @trains[0].docking(WagonPass.new(100))
-    @trains[0].docking(WagonPass.new(120))
+    @trains[0].docking(WagonPass.new('100'))
+    @trains[0].docking(WagonPass.new('120'))
     @trains[0].add_route(@routes[0])
     @trains[1].add_route(@routes[0])
-    @trains[1].docking(WagonPass.new(200))
-    @trains[2].docking(WagonCargo.new(150))
+    @trains[1].docking(WagonPass.new('200'))
+    @trains[2].docking(WagonCargo.new('150'))
     @trains[2].add_route(@routes[0])
   end
 
@@ -295,23 +295,24 @@ class RailRoad
     puts "Выберете поезд к какому добавляем вагон"
     train_visualize
     train_add_wagon = gets.chomp.to_i - 1
-    if @trains[train_add_wagon].is_a?(TrainPass)
+    selected_train = @trains[train_add_wagon]
+    if selected_train.is_a?(TrainPass)
       puts "Выбран пасажирский вагон"
       puts "Сколько мест будет в вагоне?"
       puts "(Максимум 200)"
-      seats = gets.chomp.to_i
-      @trains[train_add_wagon].docking(WagonPass.new(seats))
-    elsif @trains[train_add_wagon].is_a?(TrainCargo)
+      seats = gets.chomp
+      selected_train.docking(WagonPass.new(seats))
+    elsif selected_train.is_a?(TrainCargo)
       puts "Выбран грузовой вагон"
       puts "Сколько груза будет помещаться в вагон?"
       puts "(Максимум 200)"
-      load = gets.chomp.to_i
-      @trains[train_add_wagon].docking(WagonCargo.new(load))
+      loads = gets.chomp
+      selected_train.docking(WagonCargo.new(loads))
     else
       puts "Вы выбрали чепуху"
     end
     puts "Вагончик добавлен"
-    puts "Теперь их #{@trains[train_add_wagon].wagons.size}"
+    puts "Теперь их #{selected_train.wagons.size}"
   rescue StandardError => e
     puts e.message
   end
@@ -406,15 +407,16 @@ class RailRoad
     puts "Выберете вагон"
     block(trains[user_choice_train])
     user_choice_wagon = gets.chomp.to_i - 1
-    if trains[user_choice_train].wagons[user_choice_wagon].is_a?(WagonCargo)
-      puts "Сколько тон грузим? Осталось места #{trains[user_choice_train].wagons[user_choice_wagon].free}"
-      user_choice_load = gets.chomp.to_i
-      trains[user_choice_train].wagons[user_choice_wagon].upload(user_choice_load)
+    wagon = trains[user_choice_train].wagons[user_choice_wagon]
+    if wagon.is_a?(WagonCargo)
+      puts "Сколько тон грузим? Осталось места #{wagon.free}"
+      user_choice_load = gets.chomp
+      wagon.upload(user_choice_load)
       puts "Добавляем #{user_choice_load} тонн груза"
     else
-      trains[user_choice_train].wagons[user_choice_wagon].upload
+      wagon.upload
       puts "Добавляем одного пассажира"
-      puts"Осталось места #{trains[user_choice_train].wagons[user_choice_wagon].free}"
+      puts"Осталось места #{wagon.free}"
     end
   rescue StandardError => e
     puts e.message
@@ -459,13 +461,13 @@ class RailRoad
 
   def wagon_visualize
     user_choice = gets.chomp.to_i - 1
-    block = proc { |number, type_wagon, free_volume, busy_volume|
-      puts
-      print "Номер вагона-> " + number.to_s
-      print ";   Тип вагона-> " + type_wagon
-      print ";   Количество свободного места-> " + free_volume.to_s
-      puts ";   Количество занятого места-> " + busy_volume.to_s
-    }
+    # block = proc { |number, type_wagon, free_volume, busy_volume|
+    #   puts
+    #   print "Номер вагона-> " + number.to_s
+    #   print ";   Тип вагона-> " + type_wagon
+    #   print ";   Количество свободного места-> " + free_volume.to_s
+    #   puts ";   Количество занятого места-> " + busy_volume.to_s
+    # }
     @stations[user_choice].trains.each do |train|
       puts
       # # train.block
@@ -483,7 +485,7 @@ class RailRoad
     print ";   Количество свободного места-> " + free_volume.to_s
     puts ";   Количество занятого места-> " + busy_volume.to_s
     }
-    train.list_wagons_trains(train, &block)
+    train.list_wagons_trains(&block)
   end
 
 end

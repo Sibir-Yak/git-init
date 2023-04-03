@@ -1,20 +1,19 @@
 class WagonPass < Wagon
-  # attr_reader :seats
-# атрибут общего кол-ва мест (задается при создании вагона)
   def initialize(seats)
+    super
     @container = seats
     @seats = 0
     validate!
-    super()
+    @container = seats.to_i
   end
 
   def validate!
-    raise WagonLoadSeatsEmptyError if @container <= 0 || @container == nil
-    raise TooMuchVolumeError if @container > 200
+    raise WagonLoadSeatsEmptyError if @container.to_i.to_s != @container
+    raise TooMuchVolumeError if @container.to_i > 200
   end
 # Метод который занимет места по 1 за раз
-  def upload(_load = 0)
-    raise TooMuchUploadError if  @seats >= @container
+  def upload(_loads = 0)
+    raise TooMuchUploadError if  @seats >= free
     @seats += 1
   end
 # Возвращает количество занятых мест в вагоне

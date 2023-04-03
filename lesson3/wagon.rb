@@ -1,18 +1,16 @@
 class Wagon
 include BrandName
-  def initialize
+  def initialize(_loads = 0); end
 
-  end
-
-  def upload(_load = 0)
+  def upload(_loads = 0)
     raise "Not Implemented"
   end
 
   def free
-
+    raise "Not Implemented"
   end
 
   def busy
-
+    raise "Not Implemented"
   end
 end

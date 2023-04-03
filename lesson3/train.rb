@@ -107,9 +107,9 @@ class Train
 # написать метод, который принимает блок и проходит по всем вагонам поезда
 # (вагоны должны быть во внутреннем массиве),
 # передавая каждый объект вагона в блок.
-  def list_wagons_trains(train, &block)
+  def list_wagons_trains(&block)
     number = 0
-    train.wagons.each do |wagon|
+    wagons.each do |wagon|
       number += 1
       type_wagon = wagon.class.to_s[5..9]
       free_volume = wagon.free
