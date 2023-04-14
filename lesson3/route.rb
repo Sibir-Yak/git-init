@@ -1,9 +1,14 @@
+# frozen_string_literal: true
+
 class Route
   include InstanceCounter
   include Valid
 
-  attr_reader :stations        #Может выводить список всех станций по-порядку от начальной до конечной
-  def initialize(station, station2)   #Имеет начальную и конечную станцию, а также список промежуточных станций. Начальная и конечная станции указываютсся при создании маршрута, а промежуточные могут добавляться между ними.
+  attr_reader :stations # Может выводить список всех станций по-порядку от начальной до конечной
+
+  # Имеет начальную и конечную станцию, а также список промежуточных станций.
+  # Начальная и конечная станции указываютсся при создании маршрута, а промежуточные могут добавляться между ними.
+  def initialize(station, station2)
     @stations = [station, station2]
     validate!
     register_instance
@@ -15,8 +20,10 @@ class Route
     raise ObjectTypeError unless @stations[0].is_a?(Station) && @stations[1].is_a?(Station)
   end
 
-  def add_station(point)       #Может добавлять промежуточную станцию в список
+  # Может добавлять промежуточную станцию в список
+  def add_station(point)
     raise ObjectTypeError unless point.is_a?(Station)
+
     @stations.insert(-2, point)
   end
 
@@ -29,7 +36,8 @@ class Route
     # puts name_route
   end
 
-  def delete_station(point)    #Может удалять промежуточную станцию из списка
+  # Может удалять промежуточную станцию из списка
+  def delete_station(point)
     raise TrainStationNowError if  point.trains.any?
     raise FirstStationDestroyError if point == stations[0]
     raise LastStationDestroyError if point == stations[-1]

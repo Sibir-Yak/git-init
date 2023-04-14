@@ -1,0 +1,6 @@
+AllCops:
+  Exclude:
+    - 'railroad.rb'
+
+Style/Documentation:
+  Enabled: false
