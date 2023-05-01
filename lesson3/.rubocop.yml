@@ -1,6 +1,29 @@
 AllCops:
-  Exclude:
-    - 'railroad.rb'
+  NewCops: enable
 
 Style/Documentation:
   Enabled: false
+
+Style/ClassVars:
+  Exclude:
+    - train.rb
+
+Style/RedundantInitialize:
+  Exclude:
+    - wagon.rb
+
+Metrics/ClassLength:
+  Exclude:
+    - railroad.rb
+
+Metrics/MethodLength:
+  Exclude:
+    - railroad.rb
+
+Metrics/AbcSize:
+  Exclude:
+    - railroad.rb
+
+Metrics/CyclomaticComplexity:
+  Exclude:
+    - railroad.rb

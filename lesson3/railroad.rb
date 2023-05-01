@@ -133,10 +133,10 @@ class RailRoad
       puts
     when 3
       @trains.each do |train|
-        if train.speed != 0
-          puts "Чмеха под номером #{train.number} ураганит на скорости #{train.speed} км.ч. в пространство"
-        else
+        if train.speed.zero?
           puts 'Все чмехи стоят'
+        else
+          puts "Чмеха под номером #{train.number} ураганит на скорости #{train.speed} км.ч. в пространство"
         end
       end
     when 4
