@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 class TrainCargo < Train
-  def docking(wagon_cargo)         #стыковка  вагона
+  # стыковка  вагона
+  def docking(wagon_cargo)
     raise ObjectTypeError unless wagon_cargo.is_a?(WagonCargo)
 
     super
